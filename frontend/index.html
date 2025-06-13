@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Form</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1 class="page-heading">Welcome to Notes Hub</h1>
+
+  <div class="container">
+    <div class="form-box">
+      <h2>Login Form</h2>
+      <div class="toggle">
+        <button class="active" onclick="showLogin()">Login</button>
+        <button onclick="showSignup()">Signup</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="form">
+        <input type="email" id="loginEmail" placeholder="Email Address" required />
+        <input type="password" id="loginPassword" placeholder="Password" required />
+        <a href="#" class="forgot" onclick="forgotPassword()">Forgot Password?</a>
+        <button type="submit" class="btn">Login</button>
+        <p>Not a member? <a href="#" onclick="showSignup()">Signup now</a></p>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signupForm" class="form hidden">
+        <input type="text" id="signupName" placeholder="Full Name" required />
+        <input type="email" id="signupEmail" placeholder="Email Address" required />
+        <input type="password" id="signupPassword" placeholder="Create Password" required />
+        <button type="submit" class="btn">Signup</button>
+        <p>Already a member? <a href="#" onclick="showLogin()">Login here</a></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="quote-box" id="quoteBox">
+    Education is the most powerful weapon which you can use to change the world. – Nelson Mandela
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notes Hub - My Notes</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="notes-page">
+
+  <button id="logoutBtn" class="logout-btn">Logout</button>
+
+  <div class="welcome">
+    <h1>Welcome, <span id="userName">User</span>!!!</h1>
+  </div>
+
+  <!-- Course + Semester Filter -->
+  <div class="filter-section">
+    <select id="courseSelect">
+      <option value="">Select Course</option>
+      <option value="MCA">MCA</option>
+      <option value="BSc Physics">BSc Physics</option>
+      <option value="Programming">Programming</option>
+      <option value="Web Development">Web Development</option>
+    </select>
+
+    <select id="semesterSelect">
+      <option value="">Select Semester</option>
+    </select>
+
+    <button id="loadSubjectsBtn">Load Subjects</button>
+  </div>
+
+  <!-- Notes -->
+  <div id="notesContainer" class="notes-container">
+    <!-- Subject dropdowns will be injected here -->
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
