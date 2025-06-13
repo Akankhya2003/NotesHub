@@ -1,43 +1,61 @@
+// server.js
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-// Import Routes
+// Route Imports
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const noteRoutes = require('./routes/notes');
 
-// Initialize Express App
+// Express App
 const app = express();
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
+
+// Serve uploaded files statically (for direct PDF access if needed)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Default Route
+// Welcome Route
 app.get('/', (req, res) => {
   res.send('📚 Notes Hub Server is Running!');
 });
 
-// Use Routes
-app.use('/api/auth', authRoutes);     // For login/signup (if implemented separately)
-app.use('/api/admin', adminRoutes);   // Admin note upload
-app.use('/api/notes', noteRoutes);    // User note access
+// Use API Routes
+app.use('/api/auth', authRoutes);     // Auth routes (optional)
+app.use('/api/admin', adminRoutes);   // Admin uploads
+app.use('/api/notes', noteRoutes);    // Notes access
 
-// Error Handler Middleware (Optional but helpful)
+// Serve downloadable note files (e.g., /notes/filename.pdf)
+app.get('/notes/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, 'uploads', filename);
+
+  res.download(filePath, (err) => {
+    if (err) {
+      console.error("Download error:", err.message);
+      res.status(404).send('❌ File not found');
+    }
+  });
+});
+
+// Global Error Handler
 app.use((err, req, res, next) => {
-  console.error('Server Error:', err.stack);
+  console.error('❗ Server Error:', err.stack);
   res.status(500).json({ message: 'Something went wrong on the server!' });
 });
 
-// Connect MongoDB and Start Server
+// MongoDB Connection + Start Server
 const PORT = process.env.PORT || 5000;
+
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 })
 .then(() => {
   console.log('✅ MongoDB connected successfully');
@@ -46,5 +64,5 @@ mongoose.connect(process.env.MONGO_URI, {
   });
 })
 .catch((error) => {
-  console.error('❌ Failed to connect to MongoDB:', error);
+  console.error('❌ MongoDB connection failed:', error.message);
 });
