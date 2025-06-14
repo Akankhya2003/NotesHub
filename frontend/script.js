@@ -1,5 +1,8 @@
+// ========== CONFIG ==========
+// 🔁 Replace with your actual Render backend URL
+const BACKEND_URL = "https://your-backend.onrender.com";
+
 // ========== LOGIN SYSTEM ==========
-// Already handled (keep your existing login/signup code)
 function showLogin() {
   document.getElementById('loginForm').classList.remove('hidden');
   document.getElementById('signupForm').classList.add('hidden');
@@ -81,13 +84,12 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-
 // ========== COURSE → SEMESTER MAPPING ==========
 const courseSemesterMap = {
   "MCA": ["1st Semester", "2nd Semester"],
   "BSc Physics": ["1st Semester", "2nd Semester", "3rd Semester", "4th Semester", "5th Semester", "6th Semester"],
   "Programming": ["C", "Java", "Data Structures"],
-  "Web Development":["HTML", "CSS", "JavaScript"]
+  "Web Development": ["HTML", "CSS", "JavaScript"]
 };
 
 // ========== DOM ELEMENTS ==========
@@ -129,7 +131,7 @@ loadSubjectsBtn?.addEventListener("click", () => {
 function fetchSubjects(category) {
   notesContainer.innerHTML = "<p>Loading subjects...</p>";
 
-  fetch(`http://localhost:5000/api/notes?category=${encodeURIComponent(category)}`)
+  fetch(`${BACKEND_URL}/api/notes?category=${encodeURIComponent(category)}`)
     .then(res => res.json())
     .then(data => {
       notesContainer.innerHTML = "";
@@ -175,7 +177,7 @@ function toggleDownloads(button, category, subject) {
   }
 
   button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
-  fetch(`http://localhost:5000/api/notes?category=${encodeURIComponent(category)}&subject=${encodeURIComponent(subject)}`)
+  fetch(`${BACKEND_URL}/api/notes?category=${encodeURIComponent(category)}&subject=${encodeURIComponent(subject)}`)
     .then(res => res.json())
     .then(data => {
       container.innerHTML = "";
@@ -194,7 +196,7 @@ function toggleDownloads(button, category, subject) {
               <strong>${note.title}</strong><br />
               <small>${note.subject}</small>
             </div>
-            <a class="download-btn" href="http://localhost:5000${note.fileUrl}" download target="_blank">⬇️ Download</a>
+            <a class="download-btn" href="${BACKEND_URL}${note.fileUrl}" download target="_blank">⬇️ Download</a>
           `;
           list.appendChild(item);
         });
