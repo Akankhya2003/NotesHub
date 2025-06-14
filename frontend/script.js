@@ -1,6 +1,6 @@
 // ========== CONFIG ==========
 // 🔁 Replace with your actual Render backend URL
-const BACKEND_URL = "https://your-backend.onrender.com";
+const BACKEND_URL = "https://noteshub-tdw3.onrender.com";
 
 // ========== LOGIN SYSTEM ==========
 function showLogin() {
