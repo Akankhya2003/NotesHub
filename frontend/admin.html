@@ -22,7 +22,10 @@
     </form>
 
     <div id="message" class="message"></div>
+    <button id="uploadQuizBtn">Upload Quiz</button>
     <button onclick="logout()">Logout</button>
+    
+
   </div>
 
   <script>
@@ -94,6 +97,11 @@
       localStorage.removeItem('facultySubjects');
       window.location.href = "faculty-login.html";
     }
+
+    document.getElementById('uploadQuizBtn').addEventListener('click', () => {
+  window.location.href = 'quiz_upload.html';  // Adjust path if needed
+});
+
   </script>
 </body>
 </html>

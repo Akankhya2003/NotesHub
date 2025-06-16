@@ -46,3 +46,21 @@ form button:hover {
   margin-top: 15px;
   font-weight: bold;
 }
+
+#uploadQuizBtn {
+  width: 100%;
+  padding: 12px;
+  margin: 15px 0 10px 0; /* a bit more margin-top for spacing */
+  border-radius: 8px;
+  border: none;
+  background-color: #0078d7;  /* similar hover color */
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 15px;
+}
+
+#uploadQuizBtn:hover {
+  background-color: #004aad;  /* reverse of form button hover */
+}
