@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const Faculty = require('../models/Faculty');
+const Faculty = require('../models/faculty');
 const router = express.Router();
 
 // Register a new faculty (Optional, can be pre-created manually)
