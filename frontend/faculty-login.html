@@ -2,50 +2,117 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Faculty Login</title>
+  <title>Faculty Auth</title>
   <link rel="stylesheet" href="faculty-login.css" />
 </head>
 <body>
-<!-- Faculty Login Form -->
-<form id="facultyLoginForm" class="form">
-  <h2>Faculty Login</h2>
 
-  <input type="email" id="facultyEmail" placeholder="Email" required />
-  <input type="password" id="facultyPassword" placeholder="Password" required />
-  <button type="submit" class="btn">Login</button>
-</form>
+  <div class="container">
+    <div class="toggle-btns">
+      <button id="loginTab" class="active">Login</button>
+      <button id="registerTab">Register</button>
+    </div>
 
-<script>
-  const BACKEND_URL = "https://noteshub-tdw3.onrender.com";
+    <!-- Login Form -->
+    <form id="loginForm">
+      <h2>Faculty Login</h2>
+      <input type="email" id="facultyLoginEmail" placeholder="Email" required />
+      <input type="password" id="facultyLoginPassword" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
 
-  document.getElementById("facultyLoginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+    <!-- Register Form -->
+    <form id="registerForm" class="hidden">
+      <h2>Faculty Register</h2>
+      <input type="email" id="facultyRegisterEmail" placeholder="Email" required />
+      <input type="password" id="facultyRegisterPassword" placeholder="Password" required />
+      <input type="text" id="facultySubjects" placeholder="Subjects (comma separated)" required />
+      <button type="submit">Register</button>
+    </form>
+  </div>
 
-    const email = document.getElementById("facultyEmail").value.trim();
-    const password = document.getElementById("facultyPassword").value;
+  <script>
+    const BACKEND_URL = "https://noteshub-tdw3.onrender.com";
 
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/faculty/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
 
-      const data = await res.json();
+    // Toggle tabs
+    loginTab.addEventListener('click', () => {
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+      loginTab.classList.add('active');
+      registerTab.classList.remove('active');
+    });
 
-      if (res.ok) {
-        localStorage.setItem("facultyToken", data.token);
-        localStorage.setItem("facultySubjects", JSON.stringify(data.faculty.assignedSubjects));
-        window.location.href = "admin.html"; // Redirect to faculty panel
-      } else {
-        alert(data.msg || "Login failed. Please check your credentials.");
+    registerTab.addEventListener('click', () => {
+      loginForm.classList.add('hidden');
+      registerForm.classList.remove('hidden');
+      registerTab.classList.add('active');
+      loginTab.classList.remove('active');
+    });
+
+    // Faculty Login
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("facultyLoginEmail").value.trim();
+      const password = document.getElementById("facultyLoginPassword").value;
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/faculty/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          localStorage.setItem("facultyToken", data.token);
+          localStorage.setItem("facultySubjects", JSON.stringify(data.faculty.assignedSubjects));
+          alert("✅ Login successful!");
+          window.location.href = "admin.html";
+        } else {
+          alert(data.msg || "Login failed.");
+        }
+      } catch (error) {
+        alert("Network error. Please try again later.");
+        console.error("Login error:", error);
       }
-    } catch (error) {
-      alert("Network error. Please try again later.");
-      console.error("Login error:", error);
-    }
-  });
-</script>
+    });
+
+    // Faculty Register
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("facultyRegisterEmail").value.trim();
+      const password = document.getElementById("facultyRegisterPassword").value;
+      const assignedSubjects = document.getElementById("facultySubjects").value
+        .split(",")
+        .map(s => s.trim());
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/faculty/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, assignedSubjects }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("✅ Registered successfully! You can now log in.");
+          loginTab.click(); // switch to login
+        } else {
+          alert(data.msg || "Registration failed.");
+        }
+      } catch (error) {
+        alert("Network error. Please try again later.");
+        console.error("Register error:", error);
+      }
+    });
+  </script>
+
 </body>
 </html>
