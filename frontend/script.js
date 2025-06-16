@@ -1,5 +1,4 @@
 // ========== CONFIG ==========
-// 🔁 Replace with your actual Render backend URL
 const BACKEND_URL = "https://noteshub-tdw3.onrender.com";
 
 // ========== LOGIN SYSTEM ==========
@@ -123,13 +122,13 @@ loadSubjectsBtn?.addEventListener("click", () => {
     return;
   }
 
-  const category = `${course} ${semester}`;
-  fetchSubjects(category);
+  fetchSubjects(course, semester);
 });
 
 // ========== FETCH SUBJECTS ==========
-function fetchSubjects(category) {
+function fetchSubjects(course, semester) {
   notesContainer.innerHTML = "<p>Loading subjects...</p>";
+  const category = `${course} ${semester}`;
 
   fetch(`${BACKEND_URL}/api/notes?category=${encodeURIComponent(category)}`)
     .then(res => res.json())
@@ -147,7 +146,7 @@ function fetchSubjects(category) {
         const subjectCard = document.createElement("div");
         subjectCard.className = "note-card";
         subjectCard.innerHTML = `
-          <button class="subject-toggle" onclick="toggleDownloads(this, '${category}', '${subject}')">
+          <button class="subject-toggle" onclick="toggleDownloads(this, '${course}', '${semester}', '${subject}')">
             <i class="fas fa-folder"></i> ${subject}
           </button>
           <div class="downloads hidden animated"></div>
@@ -162,8 +161,9 @@ function fetchSubjects(category) {
 }
 
 // ========== TOGGLE NOTES DISPLAY WITH ANIMATION ==========
-function toggleDownloads(button, category, subject) {
+function toggleDownloads(button, course, semester, subject) {
   const container = button.nextElementSibling;
+  const category = `${course} ${semester}`;
 
   if (!container.classList.contains("hidden")) {
     container.classList.add("fade-out");
@@ -177,6 +177,7 @@ function toggleDownloads(button, category, subject) {
   }
 
   button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
+
   fetch(`${BACKEND_URL}/api/notes?category=${encodeURIComponent(category)}&subject=${encodeURIComponent(subject)}`)
     .then(res => res.json())
     .then(data => {
