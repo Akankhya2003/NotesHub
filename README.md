@@ -1,30 +1,46 @@
-# 📚 NotesHub
+# 📚 NotesHub - Your Academic Notes Portal
 
-NotesHub is a simple web application where users can log in, filter by course and semester, and download study notes. Admins can upload notes through a backend dashboard.
+NotesHub is a web application for managing and accessing categorized academic notes based on course and semester. Admins can upload PDFs, and users can easily view and download them.
 
----
+## 🚀 Live Demo
 
-## 🚀 Features
-
-- 👤 User Login/Signup
-- 📂 Filter notes by Course & Semester
-- 📥 Download PDFs by Subject
-- 🛠️ Admin Upload Portal
-- 📦 Node.js + Express + MongoDB Backend
-- 🌐 HTML, CSS, JavaScript Frontend
+- 🌐 Frontend: [https://keen-mooncake-debd4f.netlify.app](https://keen-mooncake-debd4f.netlify.app)
+- 🛠️ Backend API: [https://noteshub-tdw3.onrender.com](https://noteshub-tdw3.onrender.com)
 
 ---
 
-## 🔧 Tech Stack
+## 🛠 Tech Stack
 
-**Frontend:**
-- HTML
-- CSS
-- JavaScript
+### Frontend:
+- HTML5, CSS3
+- JavaScript (Vanilla)
 
-**Backend:**
+### Backend:
 - Node.js
 - Express.js
-- MongoDB (with Mongoose)
+- MongoDB (MongoDB Atlas)
+- Multer (for file uploads)
+
+### Deployment:
+- Netlify (Frontend)
+- Render (Backend)
+
+---
+
+## ✨ Features
+
+- 🔐 **User Login/Signup** using localStorage
+- 📁 **Admin Panel** to upload PDF notes
+- 🎯 **Categorized Notes** (Course → Semester → Subject)
+- 🧾 **Notes Preview and Download** in one click
+- 🎨 Stylish UI with animations and dropdown toggles
+
+---
+
+## 📂 How It Works
+
+1. **Admin** logs in via `admin.html` and uploads PDFs with metadata (Title, Subject, Category).
+2. Files are stored on the server (`/uploads`) and metadata saved in MongoDB.
+3. **User** selects Course → Semester → Subject to view & download notes.
 
 ---
