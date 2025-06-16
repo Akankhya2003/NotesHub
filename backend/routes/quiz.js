@@ -2,18 +2,31 @@ const express = require('express');
 const router = express.Router();
 const Quiz = require('../models/Quiz');
 
-// POST: Upload quiz
+// POST: Upload or Append Quiz Questions
 router.post('/upload', async (req, res) => {
   try {
     const { course, semester, subject, questions } = req.body;
-    const quiz = new Quiz({ course, semester, subject, questions });
-    await quiz.save();
-    res.status(201).json({ message: '✅ Quiz uploaded successfully' });
+
+    let existingQuiz = await Quiz.findOne({ course, semester, subject });
+
+    if (existingQuiz) {
+      // Append questions
+      existingQuiz.questions.push(...questions);
+      await existingQuiz.save();
+      return res.status(200).json({ message: '✅ Questions added to existing quiz' });
+    } else {
+      // Create new quiz
+      const newQuiz = new Quiz({ course, semester, subject, questions });
+      await newQuiz.save();
+      return res.status(201).json({ message: '✅ New quiz created successfully' });
+    }
+
   } catch (error) {
-    console.error(error);
+    console.error('❌ Upload Error:', error);
     res.status(500).json({ message: '❌ Failed to upload quiz' });
   }
 });
+
 
 // GET: Get quiz by course, semester, subject
 router.get('/view', async (req, res) => {
