@@ -1,5 +1,3 @@
-// server.js
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -7,31 +5,32 @@ const path = require('path');
 require('dotenv').config();
 
 // Route Imports
-const authRoutes = require('./routes/auth');
-const adminRoutes = require('./routes/admin');
-const noteRoutes = require('./routes/notes');
+const authRoutes = require('./routes/auth');         // Optional: user login
+const adminRoutes = require('./routes/admin');       // Upload notes
+const noteRoutes = require('./routes/notes');        // Fetch notes
+const facultyRoutes = require('./routes/facultyAuth'); // ✅ Faculty login/register
 
-// Express App
 const app = express();
 
-// Middlewares
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Serve uploaded files statically (for direct PDF access if needed)
+// Serve static uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Welcome Route
+// Welcome route
 app.get('/', (req, res) => {
   res.send('📚 Notes Hub Server is Running!');
 });
 
-// Use API Routes
-app.use('/api/auth', authRoutes);     // Auth routes (optional)
-app.use('/api/admin', adminRoutes);   // Admin uploads
-app.use('/api/notes', noteRoutes);    // Notes access
+// API Routes
+app.use('/api/auth', authRoutes);         // User auth
+app.use('/api/admin', adminRoutes);       // Admin/faculty upload
+app.use('/api/notes', noteRoutes);        // Notes list
+app.use('/api/faculty', facultyRoutes);   // ✅ Faculty register/login
 
-// Serve downloadable note files (e.g., /notes/filename.pdf)
+// File download route
 app.get('/notes/:filename', (req, res) => {
   const filename = req.params.filename;
   const filePath = path.join(__dirname, 'uploads', filename);
@@ -44,22 +43,21 @@ app.get('/notes/:filename', (req, res) => {
   });
 });
 
-// Global Error Handler
+// Global error handler
 app.use((err, req, res, next) => {
   console.error('❗ Server Error:', err.stack);
   res.status(500).json({ message: 'Something went wrong on the server!' });
 });
 
-// MongoDB Connection + Start Server
+// Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
-console.log("Trying to connect to:", process.env.MONGO_URI);
 mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-  console.log('✅ MongoDB connected successfully');
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  .then(() => {
+    console.log('✅ MongoDB connected successfully');
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('❌ MongoDB connection failed:', error.message);
   });
-})
-.catch((error) => {
-  console.error('❌ MongoDB connection failed:', error.message);
-});

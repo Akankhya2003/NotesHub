@@ -3,63 +3,97 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin - Upload Notes</title>
+  <title>Faculty Panel - Upload Notes</title>
   <link rel="stylesheet" href="admin.css" />
-  <style>
-    .message {
-      margin-top: 15px;
-      font-size: 1.1em;
-      font-weight: bold;
-    }
-  </style>
 </head>
 <body>
   <div class="admin-container">
-    <h1>Admin Panel - Upload Notes</h1>
+    <h1>Faculty Panel - Upload Notes</h1>
+
+    <div class="welcome" id="facultyWelcome"></div>
 
     <form id="uploadForm" enctype="multipart/form-data">
       <input type="text" name="title" placeholder="Title of the note" required />
-      <input type="text" name="subject" placeholder="Subject" required />
-      <input type="text" name="category" placeholder="Category (e.g., MCA 1st Semester)" required />
+      <select name="subject" id="subjectSelect" required>
+        <option value="">Select Subject</option>
+      </select>
       <input type="file" name="pdf" accept=".pdf" required />
       <button type="submit">Upload PDF</button>
     </form>
 
     <div id="message" class="message"></div>
+    <button onclick="logout()">Logout</button>
   </div>
 
   <script>
-  const BACKEND_URL = "https://noteshub-tdw3.onrender.com";
-  const form = document.getElementById('uploadForm');
-  const messageDiv = document.getElementById('message');
+    const BACKEND_URL = "https://noteshub-tdw3.onrender.com";
+    const form = document.getElementById('uploadForm');
+    const messageDiv = document.getElementById('message');
+    const subjectSelect = document.getElementById('subjectSelect');
+    const facultyWelcome = document.getElementById('facultyWelcome');
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(form);
+    const facultyToken = localStorage.getItem('facultyToken');
+    const assignedSubjects = JSON.parse(localStorage.getItem('facultySubjects'));
 
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/admin/upload`, {
-        method: 'POST',
-        body: formData
-      });
+    if (!facultyToken || !assignedSubjects) {
+      alert("Unauthorized access. Please login.");
+      window.location.href = "faculty-login.html";
+    }
 
-      const result = await res.json();
-      console.log('Server response:', result);
+    // Populate assigned subjects
+    assignedSubjects.forEach(full => {
+      const lastSpace = full.lastIndexOf(" ");
+      const category = full.substring(0, lastSpace);
+      const subject = full.substring(lastSpace + 1);
+      const option = document.createElement("option");
+      option.value = full;
+      option.textContent = `${subject} (${category})`;
+      subjectSelect.appendChild(option);
+    });
 
-      if (res.ok) {
-        messageDiv.textContent = result.msg || 'Upload successful!';
-        messageDiv.style.color = 'green';
-        form.reset();
-      } else {
-        messageDiv.textContent = 'Upload failed: ' + (result.msg || 'Unknown error');
+    facultyWelcome.textContent = "Assigned Subjects: " + assignedSubjects.join(", ");
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const selected = subjectSelect.value;
+
+      const lastSpace = selected.lastIndexOf(" ");
+      const category = selected.substring(0, lastSpace);
+      const subject = selected.substring(lastSpace + 1);
+
+      formData.append('category', category);
+      formData.set('subject', subject); // override select name if needed
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/admin/upload`, {
+          method: 'POST',
+          headers: { Authorization: facultyToken },
+          body: formData
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          messageDiv.textContent = result.msg || 'Upload successful!';
+          messageDiv.style.color = 'green';
+          form.reset();
+        } else {
+          messageDiv.textContent = 'Upload failed: ' + (result.msg || 'Unknown error');
+          messageDiv.style.color = 'red';
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        messageDiv.textContent = 'Network error. Try again.';
         messageDiv.style.color = 'red';
       }
-    } catch (err) {
-      console.error('Network error:', err);
-      messageDiv.textContent = 'Error: Could not connect to server.';
-      messageDiv.style.color = 'red';
+    });
+
+    function logout() {
+      localStorage.removeItem('facultyToken');
+      localStorage.removeItem('facultySubjects');
+      window.location.href = "faculty-login.html";
     }
-  });
-</script>
+  </script>
 </body>
 </html>
