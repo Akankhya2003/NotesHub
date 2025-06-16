@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View Quiz - Student</title>
+  <link rel="stylesheet" href="quiz.css">
+</head>
+<body class="quiz-page">
+  <h2>Attempt Quiz</h2>
+
+  <select id="courseSelect">
+    <option value="">Select Course</option>
+    <option value="MCA">MCA</option>
+    <option value="BSc Physics">BSc Physics</option>
+  </select>
+  <select id="semesterSelect">
+    <option value="">Select Semester</option>
+  </select>
+  <select id="subjectSelect">
+    <option value="">Select Subject</option>
+  </select>
+  <button onclick="loadQuiz()">Load Quiz</button>
+
+  <form id="quizForm" class="hidden">
+    <div id="quizContainer"></div>
+    <button type="submit">Submit</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    const courseSemesterMap = {
+      "MCA": ["1st Semester", "2nd Semester"],
+      "BSc Physics": ["1st Semester", "2nd Semester", "3rd Semester", "4th Semester"]
+    };
+
+    const courseSelect = document.getElementById("courseSelect");
+    const semesterSelect = document.getElementById("semesterSelect");
+    const subjectSelect = document.getElementById("subjectSelect");
+
+    courseSelect.addEventListener("change", () => {
+      const course = courseSelect.value;
+      semesterSelect.innerHTML = '<option value="">Select Semester</option>';
+      subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+
+      if (courseSemesterMap[course]) {
+        courseSemesterMap[course].forEach(sem => {
+          const opt = document.createElement("option");
+          opt.value = sem;
+          opt.textContent = sem;
+          semesterSelect.appendChild(opt);
+        });
+      }
+    });
+
+    async function loadQuiz() {
+      const course = courseSelect.value;
+      const semester = semesterSelect.value;
+      const subject = subjectSelect.value;
+
+      if (!course || !semester || !subject) {
+        alert("Please select all fields");
+        return;
+      }
+
+      const res = await fetch(`https://noteshub-tdw3.onrender.com/api/quiz/student?course=${course}&semester=${semester}&subject=${subject}`);
+      const quiz = await res.json();
+
+      if (!quiz || !quiz.questions || quiz.questions.length === 0) {
+        alert("No quiz found.");
+        return;
+      }
+
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = "";
+      quiz.questions.forEach((q, index) => {
+        const qBlock = document.createElement('div');
+        qBlock.innerHTML = `
+          <p><strong>Q${index + 1}: ${q.question}</strong></p>
+          ${q.options.map((opt, i) => `
+            <label>
+              <input type="radio" name="q${index}" value="${i}" required /> ${opt}
+            </label><br>`).join('')}
+        `;
+        container.appendChild(qBlock);
+      });
+
+      document.getElementById('quizForm').classList.remove('hidden');
+
+      document.getElementById('quizForm').onsubmit = async function (e) {
+        e.preventDefault();
+        const answers = [];
+        for (let i = 0; i < quiz.questions.length; i++) {
+          const selected = document.querySelector(`input[name="q${i}"]:checked`);
+          answers.push(parseInt(selected.value));
+        }
+
+        const scoreRes = await fetch(`https://noteshub-tdw3.onrender.com/api/quiz/submit`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ quizId: quiz._id, studentAnswers: answers })
+        });
+
+        const result = await scoreRes.json();
+        document.getElementById('result').innerHTML = `<h3>Your Score: ${result.score}/${quiz.questions.length}</h3>`;
+        document.getElementById('quizForm').classList.add('hidden');
+      };
+    }
+  </script>
+</body>
+</html>

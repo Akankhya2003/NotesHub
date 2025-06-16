@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -9,7 +9,12 @@
 </head>
 <body class="notes-page">
 
-  <button id="logoutBtn" class="logout-btn">Logout</button>
+  <!-- Logout & Quiz Buttons -->
+  <div class="top-right-buttons">
+    <button class="quiz-btn upload" onclick="location.href='faculty_quiz_upload.html'">Upload Quiz</button>
+    <button class="quiz-btn view" onclick="location.href='student_quiz_view.html'">View Quizzes</button>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </div>
 
   <div class="welcome">
     <h1>Welcome, <span id="userName">User</span>!!!</h1>

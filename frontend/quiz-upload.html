@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload Quiz - Faculty</title>
+  <link rel="stylesheet" href="quiz.css">
+</head>
+<body class="upload-page">
+  <h2>Upload Quiz</h2>
+  <form id="quizUploadForm">
+    <input type="text" name="course" placeholder="Course" required />
+    <input type="text" name="semester" placeholder="Semester" required />
+    <input type="text" name="subject" placeholder="Subject" required />
+    <input type="text" name="title" placeholder="Quiz Title" required />
+
+    <div id="questionsContainer"></div>
+    <button type="button" onclick="addQuestion()">+ Add Question</button><br><br>
+    <button type="submit">Upload Quiz</button>
+  </form>
+
+  <script>
+    function addQuestion() {
+      const container = document.getElementById('questionsContainer');
+      const index = container.children.length;
+
+      container.innerHTML += `
+        <div class="question-block">
+          <input type="text" name="question${index}" placeholder="Question" required />
+          <input type="text" name="option${index}0" placeholder="Option 1" required />
+          <input type="text" name="option${index}1" placeholder="Option 2" required />
+          <input type="text" name="option${index}2" placeholder="Option 3" required />
+          <input type="text" name="option${index}3" placeholder="Option 4" required />
+          <select name="correct${index}">
+            <option value="0">Correct: Option 1</option>
+            <option value="1">Correct: Option 2</option>
+            <option value="2">Correct: Option 3</option>
+            <option value="3">Correct: Option 4</option>
+          </select>
+        </div>
+      `;
+    }
+
+    document.getElementById('quizUploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const totalQuestions = document.querySelectorAll('.question-block').length;
+
+      const questions = [];
+      for (let i = 0; i < totalQuestions; i++) {
+        const question = formData.get(`question${i}`);
+        const options = [
+          formData.get(`option${i}0`),
+          formData.get(`option${i}1`),
+          formData.get(`option${i}2`),
+          formData.get(`option${i}3`)
+        ];
+        const correctAnswer = parseInt(formData.get(`correct${i}`));
+        questions.push({ question, options, correctAnswer });
+      }
+
+      const payload = {
+        course: formData.get('course'),
+        semester: formData.get('semester'),
+        subject: formData.get('subject'),
+        title: formData.get('title'),
+        questions
+      };
+
+      const res = await fetch("https://noteshub-tdw3.onrender.com/api/quiz/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await res.json();
+      alert(result.message || "Uploaded");
+      form.reset();
+      document.getElementById('questionsContainer').innerHTML = '';
+    });
+  </script>
+</body>
+</html>

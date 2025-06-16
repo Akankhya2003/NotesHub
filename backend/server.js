@@ -5,10 +5,11 @@ const path = require('path');
 require('dotenv').config();
 
 // Route Imports
-const authRoutes = require('./routes/auth');         // Optional: user login
-const adminRoutes = require('./routes/admin');       // Upload notes
-const noteRoutes = require('./routes/notes');        // Fetch notes
-const facultyRoutes = require('./routes/facultyAuth'); // ✅ Faculty login/register
+const authRoutes = require('./routes/auth');           // Student login/signup
+const adminRoutes = require('./routes/admin');         // Admin uploads notes
+const noteRoutes = require('./routes/notes');          // Get notes
+const facultyRoutes = require('./routes/facultyAuth'); // Faculty login/signup
+const quizRoutes = require('./routes/quiz');           // ✅ Quiz upload/view
 
 const app = express();
 
@@ -26,9 +27,10 @@ app.get('/', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);         // User auth
-app.use('/api/admin', adminRoutes);       // Admin/faculty upload
-app.use('/api/notes', noteRoutes);        // Notes list
-app.use('/api/faculty', facultyRoutes);   // ✅ Faculty register/login
+app.use('/api/admin', adminRoutes);       // Admin/faculty uploads notes
+app.use('/api/notes', noteRoutes);        // Notes access
+app.use('/api/faculty', facultyRoutes);   // Faculty login/register
+app.use('/api/quiz', quizRoutes);         // ✅ Quiz upload and student view
 
 // File download route
 app.get('/notes/:filename', (req, res) => {

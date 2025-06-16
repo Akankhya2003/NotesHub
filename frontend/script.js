@@ -129,6 +129,7 @@ loadSubjectsBtn?.addEventListener("click", () => {
 function fetchSubjects(course, semester) {
   notesContainer.innerHTML = "<p>Loading subjects...</p>";
   const category = `${course} ${semester}`;
+  const role = localStorage.getItem('role') || 'student';
 
   fetch(`${BACKEND_URL}/api/notes?category=${encodeURIComponent(category)}`)
     .then(res => res.json())
@@ -145,12 +146,22 @@ function fetchSubjects(course, semester) {
       subjects.forEach(subject => {
         const subjectCard = document.createElement("div");
         subjectCard.className = "note-card";
+
         subjectCard.innerHTML = `
           <button class="subject-toggle" onclick="toggleDownloads(this, '${course}', '${semester}', '${subject}')">
             <i class="fas fa-folder"></i> ${subject}
           </button>
           <div class="downloads hidden animated"></div>
+
+          <div class="quiz-buttons">
+            ${
+              role === "faculty"
+                ? `<button class="quiz-btn upload" onclick="handleUploadQuiz('${course}', '${semester}', '${subject}')">📤 Upload Quiz</button>`
+                : `<button class="quiz-btn view" onclick="handleViewQuiz('${course}', '${semester}', '${subject}')">👀 View Quiz</button>`
+            }
+          </div>
         `;
+
         notesContainer.appendChild(subjectCard);
       });
     })
@@ -214,4 +225,15 @@ function toggleDownloads(button, course, semester, subject) {
       container.innerHTML = "<p>Error fetching notes.</p>";
       container.classList.remove("hidden");
     });
+}
+
+// ========== HANDLE QUIZ ACTIONS ==========
+function handleUploadQuiz(course, semester, subject) {
+  // Redirect to quiz upload page with query params
+  window.location.href = `quiz_upload.html?course=${encodeURIComponent(course)}&semester=${encodeURIComponent(semester)}&subject=${encodeURIComponent(subject)}`;
+}
+
+function handleViewQuiz(course, semester, subject) {
+  // Redirect to quiz view page with query params
+  window.location.href = `quiz_view.html?course=${encodeURIComponent(course)}&semester=${encodeURIComponent(semester)}&subject=${encodeURIComponent(subject)}`;
 }
