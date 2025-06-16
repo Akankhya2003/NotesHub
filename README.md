@@ -44,3 +44,11 @@ NotesHub is a web application for managing and accessing categorized academic no
 3. **User** selects Course → Semester → Subject to view & download notes.
 
 ---
+
+### 👨‍🏫 Faculty/Admin
+- Faculty Registration & Login
+- Upload Notes (PDF)
+- Upload Quizzes (coming soon)
+- Only see & upload for their assigned subjects
+
+---
