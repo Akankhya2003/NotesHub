@@ -48,7 +48,7 @@ NotesHub is a web application for managing and accessing categorized academic no
 ### 👨‍🏫 Faculty/Admin
 - Faculty Registration & Login
 - Upload Notes (PDF)
-- Upload Quizzes (coming soon)
+- Upload Quizzes (questions provided by faculty/admin)
 - Only see & upload for their assigned subjects
 
 ---
