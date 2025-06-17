@@ -4,7 +4,7 @@ NotesHub is a web application for managing and accessing categorized academic no
 
 ## 🚀 Live Demo
 
-- 🌐 Frontend: [https://keen-mooncake-debd4f.netlify.app](https://keen-mooncake-debd4f.netlify.app)
+- 🌐 Frontend: [https://quicknoteshub.netlify.app](https://quicknoteshub.netlify.app)
 - 🛠️ Backend API: [https://noteshub-tdw3.onrender.com](https://noteshub-tdw3.onrender.com)
 
 ---
