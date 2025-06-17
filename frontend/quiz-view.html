@@ -13,12 +13,15 @@
     <option value="MCA">MCA</option>
     <option value="BSc Physics">BSc Physics</option>
   </select>
+
   <select id="semesterSelect">
     <option value="">Select Semester</option>
   </select>
+
   <select id="subjectSelect">
     <option value="">Select Subject</option>
   </select>
+
   <button onclick="loadQuiz()">Load Quiz</button>
 
   <form id="quizForm" class="hidden">
@@ -31,7 +34,22 @@
   <script>
     const courseSemesterMap = {
       "MCA": ["1st Semester", "2nd Semester"],
-      "BSc Physics": ["1st Semester", "2nd Semester", "3rd Semester", "4th Semester"]
+      "BSc Physics": ["1st Semester", "2nd Semester", "3rd Semester", "4th Semester", "5th Semester", "6th Semester"]
+    };
+
+    const subjectMap = {
+      "MCA": {
+        "1st Semester": ["OS", "DBMS", "DM", "PDS", "COA"],
+        "2nd Semester": ["DAA", "OOP", "AI", "CN", "SE"]
+      },
+      "BSc Physics": {
+        "1st Semester": ["Mathematical Physics-I", "Mechanics"],
+        "2nd Semester": ["Electricity and Magnetism", "Waves and Optics"],
+        "3rd Semester": ["Mathematical Physics-II", "Thermal Physics", "Analog System and Applications"],
+        "4th Semester": ["Mathematical Physics-III", "Elements of Modern Physics", "Digital System and Applications"],
+        "5th Semester": ["Quantum Mechanics", "Solid State Physics", "DSE-I", "DSE-II"],
+        "6th Semester": ["Electro Magnetic Theory", "Statistical Mechanics", "DSE-III", "DSE-IV"]
+      }
     };
 
     const courseSelect = document.getElementById("courseSelect");
@@ -49,6 +67,22 @@
           opt.value = sem;
           opt.textContent = sem;
           semesterSelect.appendChild(opt);
+        });
+      }
+    });
+
+    semesterSelect.addEventListener("change", () => {
+      const course = courseSelect.value;
+      const semester = semesterSelect.value;
+
+      subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+
+      if (subjectMap[course] && subjectMap[course][semester]) {
+        subjectMap[course][semester].forEach(sub => {
+          const opt = document.createElement("option");
+          opt.value = sub;
+          opt.textContent = sub;
+          subjectSelect.appendChild(opt);
         });
       }
     });
