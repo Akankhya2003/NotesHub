@@ -1,4 +1,4 @@
-/* ========== QUIZ UPLOAD PAGE STYLES ========== */
+/* ========== SHARED BASE STYLES ========== */
 
 body {
   font-family: 'Segoe UI', sans-serif;
@@ -7,25 +7,27 @@ body {
   min-height: 100vh;
   background: linear-gradient(135deg, #004aad, #00bfff);
   background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
-  color: #333;
+  animation: bgShift 15s ease infinite;
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  color: #333;
 }
 
-@keyframes gradientBG {
+@keyframes bgShift {
   0% {
-    background-position: 0% 50%;
+    background-position: 0% 0%;
   }
   50% {
-    background-position: 100% 50%;
+    background-position: 100% 100%;
   }
   100% {
-    background-position: 0% 50%;
+    background-position: 0% 0%;
   }
 }
+
+/* ========== QUIZ UPLOAD PAGE STYLES ========== */
 
 .quiz-container {
   background: white;
@@ -43,9 +45,9 @@ body {
   margin-bottom: 25px;
 }
 
-input,
-textarea,
-select {
+.quiz-container input,
+.quiz-container textarea,
+.quiz-container select {
   width: 100%;
   padding: 12px 14px;
   margin: 12px 0;
@@ -55,15 +57,15 @@ select {
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
+.quiz-container input:focus,
+.quiz-container textarea:focus,
+.quiz-container select:focus {
   border-color: #00bfff;
   box-shadow: 0 0 8px rgba(0, 191, 255, 0.5);
   outline: none;
 }
 
-button {
+.quiz-container button {
   padding: 14px 0;
   background: linear-gradient(to right, #004aad, #00bfff);
   color: white;
@@ -76,49 +78,12 @@ button {
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-button:hover {
+.quiz-container button:hover {
   background-color: #0077cc;
   transform: scale(1.03);
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* ========== QUIZ VIEW PAGE STYLES ========== */
-
-body {
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  background: linear-gradient(to bottom right, #004aad, #00bfff);
-  background-size: 300% 300%;
-  animation: bgShift 15s ease infinite;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px;
-}
-
-@keyframes bgShift {
-  0% {
-    background-position: 0% 0%;
-  }
-  50% {
-    background-position: 100% 100%;
-  }
-  100% {
-    background-position: 0% 0%;
-  }
-}
 
 .quiz-view-container {
   background-color: #fff;
@@ -134,6 +99,41 @@ body {
   color: #004aad;
   text-align: center;
   margin-bottom: 20px;
+}
+
+select {
+  padding: 10px 16px;
+  margin: 10px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+select:focus {
+  border-color: #00bfff;
+  outline: none;
+  box-shadow: 0 0 8px rgba(0, 191, 255, 0.5);
+}
+
+button {
+  padding: 10px 20px;
+  background: linear-gradient(to right, #4facfe, #00f2fe);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+  margin: 10px;
+}
+
+button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(to right, #00f2fe, #4facfe);
+  box-shadow: 0 6px 20px rgba(0, 242, 254, 0.5);
 }
 
 .question {
@@ -186,6 +186,23 @@ body {
   font-weight: bold;
   color: #004aad;
   animation: fadeInDown 1s ease;
+}
+
+.hidden {
+  display: none;
+}
+
+/* ========== ANIMATIONS ========== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeInScale {
