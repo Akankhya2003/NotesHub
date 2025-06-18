@@ -13,12 +13,23 @@
     <div class="welcome" id="facultyWelcome"></div>
 
     <form id="uploadForm" enctype="multipart/form-data">
-      <input type="text" id="title" name="title" placeholder="Title of the note" required />
+      <input type="text" name="title" placeholder="Title of the note" required />
+
+      <select name="semester" id="semesterSelect" required>
+        <option value="">Select Semester</option>
+        <option value="1st Semester">1st Semester</option>
+        <option value="2nd Semester">2nd Semester</option>
+        <option value="3rd Semester">3rd Semester</option>
+        <option value="4th Semester">4th Semester</option>
+        <!-- Add more if needed -->
+      </select>
+
       <select name="subject" id="subjectSelect" required>
         <option value="">Select Subject</option>
       </select>
-      <input type="file" id="pdf" name="pdf" accept=".pdf" required />
-      <button type="submit" id="uploadBtn">Upload PDF</button>
+
+      <input type="file" name="pdf" accept=".pdf" required />
+      <button type="submit">Upload PDF</button>
     </form>
 
     <div id="message" class="message"></div>
@@ -31,9 +42,8 @@
     const form = document.getElementById('uploadForm');
     const messageDiv = document.getElementById('message');
     const subjectSelect = document.getElementById('subjectSelect');
+    const semesterSelect = document.getElementById('semesterSelect');
     const facultyWelcome = document.getElementById('facultyWelcome');
-    const titleInput = document.getElementById('title');
-    const fileInput = document.getElementById('pdf');
 
     const facultyToken = localStorage.getItem('facultyToken');
     const assignedSubjects = JSON.parse(localStorage.getItem('facultySubjects'));
@@ -43,54 +53,58 @@
       window.location.href = "faculty-login.html";
     }
 
-    // Populate subjects
+    // Display assigned subjects
+    facultyWelcome.textContent = "Assigned Subjects: " + assignedSubjects.join(", ");
+
+    // Populate subjects dropdown
     assignedSubjects.forEach(full => {
+      let category = "General";
+      let subject = full;
+
       const lastSpace = full.lastIndexOf(" ");
-      const category = full.substring(0, lastSpace);
-      const subject = full.substring(lastSpace + 1);
+      if (lastSpace !== -1) {
+        category = full.substring(0, lastSpace);
+        subject = full.substring(lastSpace + 1);
+      }
+
       const option = document.createElement("option");
-      option.value = full;
+      option.value = `${category} ${subject}`;
       option.textContent = `${subject} (${category})`;
       subjectSelect.appendChild(option);
     });
 
-    facultyWelcome.textContent = "Assigned Subjects: " + assignedSubjects.join(", ");
-
+    // Upload handler
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const title = titleInput.value.trim();
-      const selected = subjectSelect.value;
-      const file = fileInput.files[0];
+      const formData = new FormData(form);
+      const subjectFull = subjectSelect.value;
+      const semester = semesterSelect.value;
 
-      if (!title || !selected || !file) {
-        messageDiv.textContent = "Upload failed: All fields and a PDF file are required.";
-        messageDiv.style.color = "red";
+      if (!subjectFull || !semester) {
+        messageDiv.textContent = 'Please select both semester and subject.';
+        messageDiv.style.color = 'red';
         return;
       }
 
-      const lastSpace = selected.lastIndexOf(" ");
-      const category = selected.substring(0, lastSpace);
-      const subject = selected.substring(lastSpace + 1);
+      const lastSpace = subjectFull.lastIndexOf(" ");
+      const category = subjectFull.substring(0, lastSpace);
+      const subject = subjectFull.substring(lastSpace + 1);
 
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('subject', subject);
       formData.append('category', category);
-      formData.append('pdf', file);
+      formData.append('semester', semester);
+      formData.set('subject', subject);
 
       try {
         const res = await fetch(`${BACKEND_URL}/api/admin/upload`, {
           method: 'POST',
-          headers: {
-            Authorization: facultyToken
-          },
+          headers: { Authorization: facultyToken },
           body: formData
         });
 
         const result = await res.json();
         if (res.ok) {
-          messageDiv.textContent = result.msg || 'Upload successful!';
+          messageDiv.textContent = result.msg || '✅ Upload successful!';
           messageDiv.style.color = 'green';
           form.reset();
         } else {
@@ -111,7 +125,7 @@
     }
 
     document.getElementById('uploadQuizBtn').addEventListener('click', () => {
-      window.location.href = 'quiz-upload.html';  // Adjust path if needed
+      window.location.href = 'quiz-upload.html';
     });
   </script>
 </body>
