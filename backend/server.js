@@ -6,10 +6,10 @@ require('dotenv').config();
 
 // Route Imports
 const authRoutes = require('./routes/auth');           // Student login/signup
-const adminRoutes = require('./routes/admin');         // Admin uploads notes
+const adminRoutes = require('./routes/admin');         // Admin/faculty uploads notes
 const noteRoutes = require('./routes/notes');          // Get notes
 const facultyRoutes = require('./routes/facultyAuth'); // Faculty login/signup
-const quizRoutes = require('./routes/quiz');           // ✅ Quiz upload/view
+const quizRoutes = require('./routes/quiz');           // Quiz upload/view
 
 const app = express();
 
@@ -17,7 +17,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve static uploaded files
+// Serve static uploaded files with original filename support
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Welcome route
@@ -30,9 +30,9 @@ app.use('/api/auth', authRoutes);         // User auth
 app.use('/api/admin', adminRoutes);       // Admin/faculty uploads notes
 app.use('/api/notes', noteRoutes);        // Notes access
 app.use('/api/faculty', facultyRoutes);   // Faculty login/register
-app.use('/api/quiz', quizRoutes);         // ✅ Quiz upload and student view
+app.use('/api/quiz', quizRoutes);         // Quiz upload and student view
 
-// File download route
+// Download file by filename
 app.get('/notes/:filename', (req, res) => {
   const filename = req.params.filename;
   const filePath = path.join(__dirname, 'uploads', filename);
@@ -51,7 +51,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong on the server!' });
 });
 
-// Connect to MongoDB and start server
+// Connect to MongoDB and start the server
 const PORT = process.env.PORT || 5000;
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
