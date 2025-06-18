@@ -13,19 +13,17 @@
     <div class="welcome" id="facultyWelcome"></div>
 
     <form id="uploadForm" enctype="multipart/form-data">
-      <input type="text" name="title" placeholder="Title of the note" required />
+      <input type="text" id="title" name="title" placeholder="Title of the note" required />
       <select name="subject" id="subjectSelect" required>
         <option value="">Select Subject</option>
       </select>
-      <input type="file" name="pdf" accept=".pdf" required />
-      <button type="submit">Upload PDF</button>
+      <input type="file" id="pdf" name="pdf" accept=".pdf" required />
+      <button type="submit" id="uploadBtn">Upload PDF</button>
     </form>
 
     <div id="message" class="message"></div>
     <button id="uploadQuizBtn">Upload Quiz</button>
     <button onclick="logout()">Logout</button>
-    
-
   </div>
 
   <script>
@@ -34,6 +32,8 @@
     const messageDiv = document.getElementById('message');
     const subjectSelect = document.getElementById('subjectSelect');
     const facultyWelcome = document.getElementById('facultyWelcome');
+    const titleInput = document.getElementById('title');
+    const fileInput = document.getElementById('pdf');
 
     const facultyToken = localStorage.getItem('facultyToken');
     const assignedSubjects = JSON.parse(localStorage.getItem('facultySubjects'));
@@ -43,7 +43,7 @@
       window.location.href = "faculty-login.html";
     }
 
-    // Populate assigned subjects
+    // Populate subjects
     assignedSubjects.forEach(full => {
       const lastSpace = full.lastIndexOf(" ");
       const category = full.substring(0, lastSpace);
@@ -59,20 +59,32 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const formData = new FormData(form);
+      const title = titleInput.value.trim();
       const selected = subjectSelect.value;
+      const file = fileInput.files[0];
+
+      if (!title || !selected || !file) {
+        messageDiv.textContent = "Upload failed: All fields and a PDF file are required.";
+        messageDiv.style.color = "red";
+        return;
+      }
 
       const lastSpace = selected.lastIndexOf(" ");
       const category = selected.substring(0, lastSpace);
       const subject = selected.substring(lastSpace + 1);
 
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('subject', subject);
       formData.append('category', category);
-      formData.set('subject', subject); // override select name if needed
+      formData.append('pdf', file);
 
       try {
         const res = await fetch(`${BACKEND_URL}/api/admin/upload`, {
           method: 'POST',
-          headers: { Authorization: facultyToken },
+          headers: {
+            Authorization: facultyToken
+          },
           body: formData
         });
 
@@ -99,9 +111,8 @@
     }
 
     document.getElementById('uploadQuizBtn').addEventListener('click', () => {
-  window.location.href = 'quiz-upload.html';  // Adjust path if needed
-});
-
+      window.location.href = 'quiz-upload.html';  // Adjust path if needed
+    });
   </script>
 </body>
 </html>
