@@ -1,12 +1,12 @@
-# === Node.js Dependencies ===
+# === Node.js Dependencies === 
 node_modules/
 
 # === Environment Files ===
 .env
 
 # === Uploaded Notes & Quizzes ===
-backend/uploads/
-backend/uploads/**
+backend/uploads/*
+!backend/uploads/.gitkeep
 
 # === Log Files ===
 *.log
