@@ -1,17 +1,19 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const Note = require('../models/Note');
+const cloudinary = require('../utils/cloudinary');
 const router = express.Router();
 
-// === Multer Configuration ===
+// Multer config to save temporarily
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, 'temp_uploads/');
   },
   filename: (req, file, cb) => {
-    const originalName = file.originalname.replace(/\s+/g, '_'); // Replace spaces with _
-    cb(null, originalName);
+    const name = file.originalname.replace(/\s+/g, '_');
+    cb(null, name);
   }
 });
 
@@ -35,22 +37,31 @@ router.post('/upload', upload.single('pdf'), async (req, res) => {
   }
 
   try {
-    const sanitizedFileName = req.file.originalname.replace(/\s+/g, '_'); // match saved filename
-    const fileUrl = `/uploads/${sanitizedFileName}`;
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: 'raw',
+      folder: 'notes'
+    });
 
+    // ✅ Add this line to debug the response
+    console.log("✅ Cloudinary Upload Result:", result);
+
+    // Save metadata to MongoDB
     const note = new Note({
       title,
       subject,
       category,
-      fileUrl
+      fileUrl: result.secure_url
     });
 
     await note.save();
+
+    // Delete temp file
+    fs.unlinkSync(req.file.path);
+
     res.status(201).json({ msg: '✅ Note uploaded successfully!' });
   } catch (error) {
-    console.error('Upload error:', error);
-    res.status(500).json({ msg: '❌ Server error: Upload failed' });
+    console.error('Cloudinary Upload Error:', error);
+    res.status(500).json({ msg: '❌ Upload failed on server.' });
   }
 });
-
-module.exports = router;
