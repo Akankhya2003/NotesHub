@@ -6,10 +6,16 @@ const Note = require('../models/Note');
 const cloudinary = require('../utils/cloudinary');
 const router = express.Router();
 
-// Multer config to save temporarily
+// ✅ Ensure temp_uploads folder exists
+const tempDir = 'temp_uploads';
+if (!fs.existsSync(tempDir)) {
+  fs.mkdirSync(tempDir);
+}
+
+// ✅ Multer config to save temporarily in temp_uploads/
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'temp_uploads/');
+    cb(null, tempDir);
   },
   filename: (req, file, cb) => {
     const name = file.originalname.replace(/\s+/g, '_');
@@ -28,7 +34,7 @@ const upload = multer({
   }
 });
 
-// === POST /api/admin/upload ===
+// ✅ POST route for uploading notes
 router.post('/upload', upload.single('pdf'), async (req, res) => {
   const { title, subject, category } = req.body;
 
@@ -37,16 +43,15 @@ router.post('/upload', upload.single('pdf'), async (req, res) => {
   }
 
   try {
-    // Upload to Cloudinary
+    // ✅ Upload to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
-      resource_type: 'raw',
+      resource_type: 'raw', // for non-image files like PDFs
       folder: 'notes'
     });
 
-    // ✅ Add this line to debug the response
     console.log("✅ Cloudinary Upload Result:", result);
 
-    // Save metadata to MongoDB
+    // ✅ Save metadata to MongoDB
     const note = new Note({
       title,
       subject,
@@ -56,14 +61,14 @@ router.post('/upload', upload.single('pdf'), async (req, res) => {
 
     await note.save();
 
-    // Delete temp file
+    // ✅ Delete the temp file after upload
     fs.unlinkSync(req.file.path);
 
     res.status(201).json({ msg: '✅ Note uploaded successfully!' });
   } catch (error) {
-    console.error('Cloudinary Upload Error:', error);
+    console.error('❌ Cloudinary Upload Error:', error);
     res.status(500).json({ msg: '❌ Upload failed on server.' });
   }
 });
-module.exports = router;
 
+module.exports = router;
