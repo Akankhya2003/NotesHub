@@ -65,3 +65,5 @@ router.post('/upload', upload.single('pdf'), async (req, res) => {
     res.status(500).json({ msg: '❌ Upload failed on server.' });
   }
 });
+module.exports = router;
+
