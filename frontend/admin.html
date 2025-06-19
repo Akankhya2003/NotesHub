@@ -40,8 +40,7 @@
 
   <!-- ✅ Correct way -->
 <script>
-  const BACKEND_URL = "https://noteshub-tdw3.onrender.com"; // ✅ LIVE
-
+  const BACKEND_URL = "https://noteshub-tdw3.onrender.com";
 
   const form = document.getElementById('uploadForm');
   const messageDiv = document.getElementById('message');
@@ -59,19 +58,11 @@
 
   facultyWelcome.textContent = "Assigned Subjects: " + assignedSubjects.join(", ");
 
-  assignedSubjects.forEach(full => {
-    let category = "General";
-    let subject = full;
-
-    const lastSpace = full.lastIndexOf(" ");
-    if (lastSpace !== -1) {
-      category = full.substring(0, lastSpace);
-      subject = full.substring(lastSpace + 1);
-    }
-
+  // ✅ Populate subjects directly
+  assignedSubjects.forEach(subject => {
     const option = document.createElement("option");
-    option.value = `${category} ${subject}`;
-    option.textContent = `${subject} (${category})`;
+    option.value = subject;
+    option.textContent = subject;
     subjectSelect.appendChild(option);
   });
 
@@ -79,21 +70,20 @@
     e.preventDefault();
 
     const formData = new FormData(form);
-    const subjectFull = subjectSelect.value;
+    const subject = subjectSelect.value;
     const semester = semesterSelect.value;
+    const course = "MCA"; // 🔁 You can change this if you support other courses
 
-    if (!subjectFull || !semester) {
+    if (!subject || !semester) {
       messageDiv.textContent = 'Please select both semester and subject.';
       messageDiv.style.color = 'red';
       return;
     }
 
-    const lastSpace = subjectFull.lastIndexOf(" ");
-    const category = subjectFull.substring(0, lastSpace);
-    const subject = subjectFull.substring(lastSpace + 1);
+    const category = `${course} ${semester}`;
 
-    formData.append('category', category);
-    formData.set('subject', subject);
+    formData.set('category', category);  // ✅ Properly structured category
+    formData.set('subject', subject);    // ✅ Clean subject
 
     try {
       const res = await fetch(`${BACKEND_URL}/api/admin/upload`, {
