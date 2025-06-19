@@ -1,54 +1,50 @@
 # 📚 NotesHub - Your Academic Notes Portal
 
-NotesHub is a web application for managing and accessing categorized academic notes based on course and semester. Admins can upload PDFs, and users can easily view and download them.
+**NotesHub** is a dynamic web platform built for students and faculty. It allows **students to access subject-wise categorized academic notes**, while **faculty/admins can upload notes and quizzes** securely using their login credentials.
+
+---
 
 ## 🚀 Live Demo
 
-- 🌐 Frontend: [https://quicknoteshub.netlify.app](https://quicknoteshub.netlify.app)
-- 🛠️ Backend API: [https://noteshub-tdw3.onrender.com](https://noteshub-tdw3.onrender.com)
+- 🌐 **Frontend**: [https://quicknoteshub.netlify.app](https://quicknoteshub.netlify.app)
+- ⚙️ **Backend API**: [https://noteshub-tdw3.onrender.com](https://noteshub-tdw3.onrender.com)
 
 ---
 
 ## 🛠 Tech Stack
 
-### Frontend:
+### 🔸 Frontend
 - HTML5, CSS3
 - JavaScript (Vanilla)
+- LocalStorage-based login system
 
-### Backend:
+### 🔹 Backend
 - Node.js
 - Express.js
-- MongoDB (MongoDB Atlas)
-- Multer (for file uploads)
+- MongoDB (Atlas)
+- Supabase Storage (for permanent PDF storage)
+- JWT Authentication (for faculty)
+- Multer (for handling PDF file uploads)
 
-### Deployment:
-- Netlify (Frontend)
-- Render (Backend)
-
----
-
-## ✨ Features
-
-- 🔐 **User Login/Signup** using localStorage
-- 📁 **Admin Panel** to upload PDF notes
-- 🎯 **Categorized Notes** (Course → Semester → Subject)
-- 🧾 **Notes Preview and Download** in one click
-- 🎨 Stylish UI with animations and dropdown toggles
+### ☁️ Deployment
+- **Frontend**: Netlify  
+- **Backend**: Render  
+- **Storage**: Supabase (bucket: `notes-pdf`)
 
 ---
 
-## 📂 How It Works
-
-1. **Admin** logs in via `admin.html` and uploads PDFs with metadata (Title, Subject, Category).
-2. Files are stored on the server (`/uploads`) and metadata saved in MongoDB.
-3. **User** selects Course → Semester → Subject to view & download notes.
-
----
+## ✨ Key Features
 
 ### 👨‍🏫 Faculty/Admin
-- Faculty Registration & Login
-- Upload Notes (PDF)
-- Upload Quizzes (questions provided by faculty/admin)
-- Only see & upload for their assigned subjects
+- 🔐 Faculty login using JWT token
+- 📄 Upload Notes as PDFs to Supabase
+- 📝 Upload quizzes (MCQs)
+- 📌 See only their assigned subjects
+
+### 👩‍🎓 Student Panel
+- 🧾 Login/Signup using LocalStorage
+- 🔍 Filter notes by Course → Semester → Subject
+- 📂 Animated dropdown toggles for notes
+- 📥 Direct PDF download
 
 ---
