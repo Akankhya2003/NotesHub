@@ -3,8 +3,11 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const Note = require('../models/Note');
-const cloudinary = require('../utils/cloudinary');
+const { createClient } = require('@supabase/supabase-js');
 const router = express.Router();
+
+// 🔐 Supabase credentials from .env
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 
 // ✅ Ensure temp_uploads folder exists
 const tempDir = 'temp_uploads';
@@ -18,7 +21,7 @@ const storage = multer.diskStorage({
     cb(null, tempDir);
   },
   filename: (req, file, cb) => {
-    const name = file.originalname.replace(/\s+/g, '_');
+    const name = Date.now() + '_' + file.originalname.replace(/\s+/g, '_');
     cb(null, name);
   }
 });
@@ -43,30 +46,44 @@ router.post('/upload', upload.single('pdf'), async (req, res) => {
   }
 
   try {
-    // ✅ Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      resource_type: 'raw', // for non-image files like PDFs
-      folder: 'notes'
-    });
+    const filePath = req.file.path;
+    const fileBuffer = fs.readFileSync(filePath);
+    const fileName = `${category}/${Date.now()}_${req.file.originalname.replace(/\s+/g, '_')}`;
 
-    console.log("✅ Cloudinary Upload Result:", result);
+
+    // ✅ Upload to Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from('notes-pdf')
+      .upload(fileName, fileBuffer, {
+        contentType: 'application/pdf',
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.error('❌ Supabase Upload Error:', uploadError);
+      return res.status(500).json({ msg: '❌ Upload to Supabase failed.' });
+    }
+
+    // ✅ Get public URL
+    const { data: publicUrlData } = supabase.storage.from('notes-pdf').getPublicUrl(fileName);
+    const publicUrl = publicUrlData.publicUrl;
 
     // ✅ Save metadata to MongoDB
     const note = new Note({
       title,
       subject,
       category,
-      fileUrl: result.secure_url
+      fileUrl: publicUrl,
     });
 
     await note.save();
 
     // ✅ Delete the temp file after upload
-    fs.unlinkSync(req.file.path);
+    fs.unlinkSync(filePath);
 
     res.status(201).json({ msg: '✅ Note uploaded successfully!' });
   } catch (error) {
-    console.error('❌ Cloudinary Upload Error:', error);
+    console.error('❌ Server Error:', error);
     res.status(500).json({ msg: '❌ Upload failed on server.' });
   }
 });

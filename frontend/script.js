@@ -199,7 +199,7 @@ function toggleDownloads(button, course, semester, subject) {
               <strong>${note.title}</strong><br />
               <small>${note.subject}</small>
             </div>
-            <a class="download-btn" href="${BACKEND_URL}${note.fileUrl}" download target="_blank">⬇️ Download</a>
+            <a class="download-btn" href="${note.fileUrl}" target="_blank">⬇️ Download</a>
           `;
           list.appendChild(item);
         });

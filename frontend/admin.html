@@ -37,96 +37,96 @@
     <button onclick="logout()">Logout</button>
   </div>
 
-  <script>
-    const BACKEND_URL = "https://noteshub-tdw3.onrender.com";
-    const form = document.getElementById('uploadForm');
-    const messageDiv = document.getElementById('message');
-    const subjectSelect = document.getElementById('subjectSelect');
-    const semesterSelect = document.getElementById('semesterSelect');
-    const facultyWelcome = document.getElementById('facultyWelcome');
+  <!-- ✅ Correct way -->
+<script>
+  const BACKEND_URL = "http://localhost:5000";
 
-    const facultyToken = localStorage.getItem('facultyToken');
-    const assignedSubjects = JSON.parse(localStorage.getItem('facultySubjects'));
+  const form = document.getElementById('uploadForm');
+  const messageDiv = document.getElementById('message');
+  const subjectSelect = document.getElementById('subjectSelect');
+  const semesterSelect = document.getElementById('semesterSelect');
+  const facultyWelcome = document.getElementById('facultyWelcome');
 
-    if (!facultyToken || !assignedSubjects) {
-      alert("Unauthorized access. Please login.");
-      window.location.href = "faculty-login.html";
+  const facultyToken = localStorage.getItem('facultyToken');
+  const assignedSubjects = JSON.parse(localStorage.getItem('facultySubjects'));
+
+  if (!facultyToken || !assignedSubjects) {
+    alert("Unauthorized access. Please login.");
+    window.location.href = "faculty-login.html";
+  }
+
+  facultyWelcome.textContent = "Assigned Subjects: " + assignedSubjects.join(", ");
+
+  assignedSubjects.forEach(full => {
+    let category = "General";
+    let subject = full;
+
+    const lastSpace = full.lastIndexOf(" ");
+    if (lastSpace !== -1) {
+      category = full.substring(0, lastSpace);
+      subject = full.substring(lastSpace + 1);
     }
 
-    // Display assigned subjects
-    facultyWelcome.textContent = "Assigned Subjects: " + assignedSubjects.join(", ");
+    const option = document.createElement("option");
+    option.value = `${category} ${subject}`;
+    option.textContent = `${subject} (${category})`;
+    subjectSelect.appendChild(option);
+  });
 
-    // Populate subjects dropdown
-    assignedSubjects.forEach(full => {
-      let category = "General";
-      let subject = full;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-      const lastSpace = full.lastIndexOf(" ");
-      if (lastSpace !== -1) {
-        category = full.substring(0, lastSpace);
-        subject = full.substring(lastSpace + 1);
-      }
+    const formData = new FormData(form);
+    const subjectFull = subjectSelect.value;
+    const semester = semesterSelect.value;
 
-      const option = document.createElement("option");
-      option.value = `${category} ${subject}`;
-      option.textContent = `${subject} (${category})`;
-      subjectSelect.appendChild(option);
-    });
-
-    // Upload handler
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const formData = new FormData(form);
-      const subjectFull = subjectSelect.value;
-      const semester = semesterSelect.value;
-
-      if (!subjectFull || !semester) {
-        messageDiv.textContent = 'Please select both semester and subject.';
-        messageDiv.style.color = 'red';
-        return;
-      }
-
-      const lastSpace = subjectFull.lastIndexOf(" ");
-      const category = subjectFull.substring(0, lastSpace);
-      const subject = subjectFull.substring(lastSpace + 1);
-
-      formData.append('category', category);
-      formData.append('semester', semester);
-      formData.set('subject', subject);
-
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/admin/upload`, {
-          method: 'POST',
-          headers: { Authorization: facultyToken },
-          body: formData
-        });
-
-        const result = await res.json();
-        if (res.ok) {
-          messageDiv.textContent = result.msg || '✅ Upload successful!';
-          messageDiv.style.color = 'green';
-          form.reset();
-        } else {
-          messageDiv.textContent = 'Upload failed: ' + (result.msg || 'Unknown error');
-          messageDiv.style.color = 'red';
-        }
-      } catch (err) {
-        console.error('Error:', err);
-        messageDiv.textContent = 'Network error. Try again.';
-        messageDiv.style.color = 'red';
-      }
-    });
-
-    function logout() {
-      localStorage.removeItem('facultyToken');
-      localStorage.removeItem('facultySubjects');
-      window.location.href = "faculty-login.html";
+    if (!subjectFull || !semester) {
+      messageDiv.textContent = 'Please select both semester and subject.';
+      messageDiv.style.color = 'red';
+      return;
     }
 
-    document.getElementById('uploadQuizBtn').addEventListener('click', () => {
-      window.location.href = 'quiz-upload.html';
-    });
-  </script>
+    const lastSpace = subjectFull.lastIndexOf(" ");
+    const category = subjectFull.substring(0, lastSpace);
+    const subject = subjectFull.substring(lastSpace + 1);
+
+    formData.append('category', category);
+    formData.set('subject', subject);
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/upload`, {
+        method: 'POST',
+        headers: {
+          Authorization: facultyToken
+        },
+        body: formData
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        messageDiv.textContent = result.msg || '✅ Upload successful!';
+        messageDiv.style.color = 'green';
+        form.reset();
+      } else {
+        messageDiv.textContent = 'Upload failed: ' + (result.msg || 'Unknown error');
+        messageDiv.style.color = 'red';
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      messageDiv.textContent = 'Network error. Try again.';
+      messageDiv.style.color = 'red';
+    }
+  });
+
+  function logout() {
+    localStorage.removeItem('facultyToken');
+    localStorage.removeItem('facultySubjects');
+    window.location.href = "faculty-login.html";
+  }
+
+  document.getElementById('uploadQuizBtn').addEventListener('click', () => {
+    window.location.href = 'quiz-upload.html';
+  });
+</script>
 </body>
 </html>
