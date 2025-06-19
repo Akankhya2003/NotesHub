@@ -48,3 +48,18 @@
 - 📥 Direct PDF download
 
 ---
+
+## 🧪 Usage Instructions
+
+### ✅ Faculty Login
+- Visit `/faculty-login.html`
+- Log in with assigned token
+- Upload notes by selecting semester, subject, and file
+- Files are permanently stored in Supabase, metadata in MongoDB
+
+### 📥 Student Access
+- Login or signup via `index.html`
+- Select **Course → Semester → Subject**
+- View notes and download PDFs directly
+
+---
